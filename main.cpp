@@ -5,6 +5,6 @@ using namespace std;
 
 int main()
 {
-    find_max_subarray_recursive();
+    find_max_subarray();
     return 0;
 }
