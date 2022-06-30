@@ -1,9 +1,10 @@
 #include <iostream>
+#include "cormen.h"
 
 using namespace std;
 
 int main()
 {
-    cout << "Hello world!" << endl;
+    find_max_subarray_recursive();
     return 0;
 }
