@@ -10,11 +10,13 @@ class Matrix
         enum constr_modes {mode_copy, mode_identity, mode_conseq};
         Matrix(const constr_modes constr_mode, const int p_rows, const int p_cols = 1, const int p_val = 0);
         ~Matrix();
-        const int rows() const;
-        const int cols() const;
-        const int set_item(const int p_row, const int p_col, const int p_val);
-        const int get_item(const int p_row, const int p_col) const;
+        int rows() const;
+        int cols() const;
+        int set_item(const int p_row, const int p_col, const int p_val);
+        int get_item(const int p_row, const int p_col) const;
         Matrix & operator+=(const Matrix & p_a);
+        Matrix & operator-=(const Matrix & p_a);
+        Matrix & operator*=(const int p_a);
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
 
@@ -27,6 +29,9 @@ class Matrix
 };
 
 Matrix operator+(const Matrix p_a, const Matrix & p_b);
+Matrix operator-(const Matrix p_a, const Matrix & p_b);
+Matrix operator*(Matrix p_a, const int p_b);
+Matrix operator*(const int p_a, Matrix p_b);
 
 std::ostream & operator<<(std::ostream & p_os, const Matrix & p_m);
 std::istream & operator>>(std::istream & p_is, Matrix & p_m);

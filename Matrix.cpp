@@ -41,12 +41,12 @@ Matrix::~Matrix()
 
 }
 
-const int Matrix::get_item(const int p_row, const int p_col) const
+int Matrix::get_item(const int p_row, const int p_col) const
 {
     return m_items[p_row][p_col];
 }
 
-const int Matrix::set_item(const int p_row, const int p_col, const int p_val)
+int Matrix::set_item(const int p_row, const int p_col, const int p_val)
 {
     m_items[p_row][p_col] = p_val;
     return p_val;
@@ -85,11 +85,11 @@ istream & operator>>(istream & p_is, Matrix & p_m)
     }
     return p_is;
 }
-const int Matrix::rows() const
+int Matrix::rows() const
 {
     return m_items.size();
 }
-const int Matrix::cols() const
+int Matrix::cols() const
 {
     if (m_items.size() == 0)
     {
@@ -114,7 +114,27 @@ Matrix & Matrix::operator+=(const Matrix & p_a)
             this->set_item(r, c, this->get_item(r, c) + p_a.get_item(r, c));
         }
     }
-    return *this;
+    return * this;
+}
+
+Matrix & Matrix::operator-=(const Matrix & p_a)
+{
+    (*this) += p_a * -1;
+    return * this;
+}
+
+Matrix & Matrix::operator*=(const int p_a)
+{
+    int rows = this->rows();
+    int cols = this->cols();
+    for (int r = 0; r < rows; r ++)
+    {
+        for (int c = 0; c < cols; c ++)
+        {
+            this->set_item(r, c, this->get_item(r, c) * p_a);
+        }
+    }
+    return * this;
 }
 
 int Matrix::copy_items(const Matrix & p_a)
@@ -136,6 +156,24 @@ Matrix operator+(Matrix p_a, const Matrix & p_b)
 {
     p_a += p_b;
     return p_a;
+}
+
+Matrix operator-(Matrix p_a, const Matrix & p_b)
+{
+    p_a -= p_b;
+    return p_a;
+}
+
+Matrix operator*(Matrix p_a, const int p_b)
+{
+    p_a *= p_b;
+    return p_a;
+}
+
+Matrix operator*(const int p_a, Matrix p_b)
+{
+    p_b *= p_a;
+    return p_b;
 }
 
 Matrix & Matrix::operator=(const Matrix & p_a)
