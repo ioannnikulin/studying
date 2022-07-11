@@ -117,6 +117,33 @@ Matrix & Matrix::operator+=(const Matrix & p_a)
     return * this;
 }
 
+Matrix & Matrix::operator*=(const Matrix & p_a)
+{
+    int rows = this->rows();
+    int connect = this->cols();
+    int cols = p_a.cols();
+    if (connect != p_a.rows())
+    {
+        cerr << "Error: cannot multiply incompatible matrices" << endl;
+        return *this;
+    }
+    Matrix res(constr_modes::mode_copy, rows, cols);
+    for (int r = 0; r < rows; r ++)
+    {
+        for (int c = 0; c < cols; c ++)
+        {
+            int val = 0;
+            for (int i = 0; i < connect; i ++)
+            {
+                val += this->get_item(r, i) * p_a.get_item(i, c);
+            }
+            res.set_item(r, c, val);
+        }
+    }
+    this->copy_items(res);
+    return * this;
+}
+
 Matrix & Matrix::operator-=(const Matrix & p_a)
 {
     (*this) += p_a * -1;
@@ -155,6 +182,12 @@ int Matrix::copy_items(const Matrix & p_a)
 Matrix operator+(Matrix p_a, const Matrix & p_b)
 {
     p_a += p_b;
+    return p_a;
+}
+
+Matrix operator*(Matrix p_a, const Matrix & p_b)
+{
+    p_a *= p_b;
     return p_a;
 }
 

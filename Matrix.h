@@ -17,6 +17,7 @@ class Matrix
         Matrix & operator+=(const Matrix & p_a);
         Matrix & operator-=(const Matrix & p_a);
         Matrix & operator*=(const int p_a);
+        Matrix & operator*=(const Matrix & p_a);
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
 
@@ -32,6 +33,7 @@ Matrix operator+(const Matrix p_a, const Matrix & p_b);
 Matrix operator-(const Matrix p_a, const Matrix & p_b);
 Matrix operator*(Matrix p_a, const int p_b);
 Matrix operator*(const int p_a, Matrix p_b);
+Matrix operator*(Matrix p_a, const Matrix & p_b);
 
 std::ostream & operator<<(std::ostream & p_os, const Matrix & p_m);
 std::istream & operator>>(std::istream & p_is, Matrix & p_m);

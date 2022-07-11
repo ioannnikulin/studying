@@ -12,14 +12,10 @@ int main()
     cin >> m;
     cout << endl << m << endl;
     */
-    Matrix a(Matrix::constr_modes::mode_conseq, 2, 3);
-    Matrix b(Matrix::constr_modes::mode_copy, 2, 3, 1);
-    cout << b << endl;
-    b += a;
-    cout << b << endl;
-    b = a + a;
-    cout << b << endl;
-    b = b - a;
-    cout << b << endl;
+    Matrix a(Matrix::constr_modes::mode_conseq, 2, 2);
+    Matrix b(Matrix::constr_modes::mode_conseq, 2, 3);
+    cout << a << endl << b << endl;
+    a = a * b;
+    cout << a << endl;
     return 0;
 }
