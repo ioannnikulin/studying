@@ -12,10 +12,20 @@ int main()
     cin >> m;
     cout << endl << m << endl;
     */
-    Matrix a(Matrix::constr_modes::mode_conseq, 2, 2);
-    Matrix b(Matrix::constr_modes::mode_conseq, 2, 3);
-    cout << a << endl << b << endl;
-    a = ~b;
-    cout << a << endl;
+    Matrix x1(Matrix::constr_modes::mode_copy, 3, 1);
+    Matrix x2(Matrix::constr_modes::mode_copy, 3, 1);
+    Matrix x3(Matrix::constr_modes::mode_copy, 3, 1);
+    x1.set_item(0, 0, 1);
+    x1.set_item(1, 0, 2);
+    x1.set_item(2, 0, 3);
+    x2.set_item(0, 0, 2);
+    x2.set_item(1, 0, 6);
+    x2.set_item(2, 0, 4);
+    x3.set_item(0, 0, 4);
+    x3.set_item(1, 0, 11);
+    x3.set_item(2, 0, 9);
+    Matrix res(x1);
+    res = x1;
+    cout << res << endl;
     return 0;
 }

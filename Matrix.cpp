@@ -46,10 +46,19 @@ int Matrix::get_item(const int p_row, const int p_col) const
     return m_items[p_row][p_col];
 }
 
-int Matrix::set_item(const int p_row, const int p_col, const int p_val)
+void Matrix::set_item(const int p_row, const int p_col, const int p_val)
 {
+    if (p_row >= this->rows())
+    {
+        cerr << "cannot assign value: no such row" << endl;
+        return;
+    }
+    if (p_col >= this->cols())
+    {
+        cerr << "cannot assign value: no such column" << endl;
+        return;
+    }
     m_items[p_row][p_col] = p_val;
-    return p_val;
 }
 
 ostream & operator<<(ostream & p_os, const Matrix & p_m)
@@ -164,7 +173,7 @@ Matrix & Matrix::operator*=(const int p_a)
     return * this;
 }
 
-Matrix Matrix::operator~()
+Matrix Matrix::operator~() const
 {
     int rows = this->cols();
     int cols = this->rows();
@@ -234,3 +243,14 @@ Matrix::Matrix(const Matrix & p_a)
 {
     this->copy_items(p_a);
 }
+/*
+int & Row::operator[](int p_idx)
+{
+    return m_parent.m_items[m_row_idx][p_idx];
+}
+
+Row Matrix::operator[](int p_idx)
+{
+    return Row(*this, p_idx);
+}
+*/

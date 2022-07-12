@@ -3,24 +3,45 @@
 
 #include <iostream>
 #include <vector>
+/*
+class Matrix;
 
+class Row
+{
+    public:
+        int & operator[](int p_idx);
+        Row(Matrix & p_parent, int p_row_idx):
+            m_parent(p_parent),
+            m_row_idx(p_row_idx)
+            {};
+
+    private:
+        Matrix & m_parent;
+        int m_row_idx;
+        Row();
+        Row(const Row &);
+        Row & operator=(const Row &);
+};
+*/
 class Matrix
 {
+    friend class Row;
     public:
         enum constr_modes {mode_copy, mode_identity, mode_conseq};
         Matrix(const constr_modes constr_mode, const int p_rows, const int p_cols = 1, const int p_val = 0);
         ~Matrix();
         int rows() const;
         int cols() const;
-        int set_item(const int p_row, const int p_col, const int p_val);
+        void set_item(const int p_row, const int p_col, const int p_val);
         int get_item(const int p_row, const int p_col) const;
         Matrix & operator+=(const Matrix & p_a);
         Matrix & operator-=(const Matrix & p_a);
         Matrix & operator*=(const int p_a);
         Matrix & operator*=(const Matrix & p_a);
-        Matrix operator~();
+        Matrix operator~() const;
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
+        //Row operator[](int p_idx);
 
     protected:
 
