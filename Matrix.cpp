@@ -145,6 +145,10 @@ Matrix & Matrix::operator*=(const Matrix & p_a)
         cerr << "Error: cannot multiply incompatible matrices" << endl;
         return *this;
     }
+    if (rows == connect and connect == cols)
+    {
+        return schtrassen_multiply(p_a);
+    }
     Matrix res(constr_modes::mode_copy, rows, cols);
     for (int r = 0; r < rows; r ++)
     {
@@ -285,7 +289,6 @@ double Matrix::determinant() const
 
 Matrix Matrix::minor(int p_row, int p_col) const
 {
-    Matrix err(constr_modes::mode_copy, 0, 0, 0);
     if (p_row > this->rows())
     {
         cerr << "cannot create a minor: no such row" << endl;
@@ -309,4 +312,77 @@ Matrix Matrix::minor(int p_row, int p_col) const
         res.m_items[r].pop_back();
     }
     return res;
+}
+
+bool Matrix::operator==(const Matrix & p_a) const
+{
+    int rows = this->rows();
+    int cols = this->cols();
+    if (rows != p_a.rows() or cols != p_a.cols())
+    {
+        return false;
+    }
+
+    for (int r = 0; r < rows; r ++)
+    {
+        for (int c = 0; c < cols; c ++)
+        {
+            if (this->get_item(r, c) != p_a.get_item(r, c))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+Matrix Matrix::submatrix(Submatrix p_subm) const
+{
+    Matrix res(constr_modes::mode_copy, p_subm[sbm_row][sbm_to] - p_subm[sbm_row][sbm_from], p_subm[sbm_col][sbm_to] - p_subm[sbm_col][sbm_from]);
+    for (int r = p_subm[sbm_row][sbm_from]; r < p_subm[sbm_row][sbm_to]; r ++)
+    {
+        for (int c = p_subm[sbm_col][sbm_from]; c < p_subm[sbm_col][sbm_to]; c ++)
+        {
+            res.set_item(r - p_subm[sbm_row][sbm_from], c - p_subm[sbm_col][sbm_from], this->get_item(r, c));
+        }
+    }
+    return res;
+}
+/*
+void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res, array<Submatrix, 3> p_subm)
+{
+    if (p_row_to - p_row_from == 1)
+    {
+        p_res.set_item(p_row_from, p_col_from, p_a.get_item(p_row_from, p_col_from) * p_b.get_item(p_row_from, p_col_from));
+        return;
+    }
+
+    int row_mid = (p_row_to + p_row_from) / 2;
+    int col_mid = (p_col_to + p_col_from) / 2;
+
+    array<array<Submatrix, 4>, 3> subm;
+    const int a = 0, b = 1, c = 2;
+    const int i11 = 0, i12 = 1, i21 = 2, i22 = 3;
+
+
+    subm[a][i11][row][from] = p_row_from;
+    subm[a][i11][row][to] = row_mid;
+    subm[a][i11][col][from] = p_col_from;
+    subm[a][i11][col][to] = col_mid;
+
+
+
+}*/
+
+
+Matrix & Matrix::schtrassen_multiply(const Matrix & p_a)
+{
+    int n = this->rows();
+    if (n != this->cols() or n != p_a.rows() or n != p_a.cols())
+    {
+        cerr << "cannot use schtrassen matrix multiplication method on nonsquare matrices" << endl;
+        Matrix e(err);
+        return e;
+    }
+
 }

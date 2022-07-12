@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 /*
 class Matrix;
 
@@ -23,6 +24,20 @@ class Row
         Row & operator=(const Row &);
 };
 */
+
+const int sbm_row = 0, sbm_col = 1;
+const int sbm_from = 0, sbm_to = 1;
+
+struct Submatrix
+{
+    public:
+        std::array<std::array<int, 2>, 2> m_idxs;
+        std::array<int, 2> & operator[](int p_idx)
+        {
+            return m_idxs[p_idx];
+        }
+};
+
 class Matrix
 {
     friend class Row;
@@ -38,16 +53,19 @@ class Matrix
         Matrix & operator-=(const Matrix & p_a);
         Matrix & operator*=(const int p_a);
         Matrix & operator*=(const Matrix & p_a);
+        bool operator==(const Matrix & p_a) const;
         Matrix operator~() const;
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
         //Row operator[](int p_idx);
         double determinant() const;
         Matrix minor(int p_row, int p_col) const;
+        Matrix submatrix(Submatrix p_subm) const;
 
     protected:
 
     private:
+        Matrix & schtrassen_multiply(const Matrix & p_a);
         int copy_items(const Matrix & p_a);
         std::vector<std::vector<int>> m_items;
         Matrix();
@@ -61,5 +79,7 @@ Matrix operator*(Matrix p_a, const Matrix & p_b);
 
 std::ostream & operator<<(std::ostream & p_os, const Matrix & p_m);
 std::istream & operator>>(std::istream & p_is, Matrix & p_m);
+
+const Matrix err(Matrix::constr_modes::mode_copy, 0, 0, 0);
 
 #endif // MATRIX_H
