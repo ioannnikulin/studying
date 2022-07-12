@@ -15,7 +15,7 @@ int main()
     Matrix a(Matrix::constr_modes::mode_conseq, 2, 2);
     Matrix b(Matrix::constr_modes::mode_conseq, 2, 3);
     cout << a << endl << b << endl;
-    a = a * b;
+    a = ~b;
     cout << a << endl;
     return 0;
 }

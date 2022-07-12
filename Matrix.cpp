@@ -164,6 +164,21 @@ Matrix & Matrix::operator*=(const int p_a)
     return * this;
 }
 
+Matrix Matrix::operator~()
+{
+    int rows = this->cols();
+    int cols = this->rows();
+    Matrix res(constr_modes::mode_copy, rows, cols);
+    for (int r = 0; r < rows; r ++)
+    {
+        for (int c = 0; c < cols; c ++)
+        {
+            res.set_item(r, c, this->get_item(c, r));
+        }
+    }
+    return res;
+}
+
 int Matrix::copy_items(const Matrix & p_a)
 {
     int rows = p_a.rows();

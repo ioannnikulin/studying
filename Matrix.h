@@ -18,6 +18,7 @@ class Matrix
         Matrix & operator-=(const Matrix & p_a);
         Matrix & operator*=(const int p_a);
         Matrix & operator*=(const Matrix & p_a);
+        Matrix operator~();
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
 
