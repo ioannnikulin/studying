@@ -116,6 +116,10 @@ int Matrix::cols() const
     return m_items[0].size();
 }
 
+Matrix & add(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO: move += code here
+Matrix & subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO
+Matrix & multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO
+
 Matrix & Matrix::operator+=(const Matrix & p_a)
 {
     int rows = this->rows();
@@ -348,31 +352,82 @@ Matrix Matrix::submatrix(Submatrix p_subm) const
     }
     return res;
 }
-/*
+
 void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res, array<Submatrix, 3> p_subm)
 {
-    if (p_row_to - p_row_from == 1)
+    if (p_subm[0][sbm_row][sbm_to] - p_subm[0][sbm_row][sbm_from] == 1)
     {
-        p_res.set_item(p_row_from, p_col_from, p_a.get_item(p_row_from, p_col_from) * p_b.get_item(p_row_from, p_col_from));
+        p_res.set_item(p_subm[2][sbm_row][sbm_from],
+                       p_subm[2][sbm_col][sbm_from],
+                       p_a.get_item(p_subm[0][sbm_row][sbm_from], p_subm[0][sbm_col][sbm_from]) * p_b.get_item(p_subm[1][sbm_row][sbm_from], p_subm[1][sbm_col][sbm_from]));
         return;
     }
 
-    int row_mid = (p_row_to + p_row_from) / 2;
-    int col_mid = (p_col_to + p_col_from) / 2;
+    array<int, 3> row_mid, col_mid;
+    for (int i = 0; i < 3; i++)
+    {
+        row_mid[i] = (p_subm[i][sbm_row][sbm_to] + p_subm[i][sbm_row][sbm_from]) / 2;
+        col_mid[i] = (p_subm[i][sbm_col][sbm_to] + p_subm[i][sbm_col][sbm_from]) / 2;
+    }
 
     array<array<Submatrix, 4>, 3> subm;
     const int a = 0, b = 1, c = 2;
     const int i11 = 0, i12 = 1, i21 = 2, i22 = 3;
 
+    for (int i = 0; i < 3; i ++)
+    {
+        subm[i][i11][sbm_row][sbm_from] = p_subm[i][sbm_row][sbm_from];
+        subm[i][i11][sbm_row][sbm_to] = row_mid[i];
+        subm[i][i11][sbm_col][sbm_from] = p_subm[i][sbm_row][sbm_from];
+        subm[i][i11][sbm_col][sbm_to] = col_mid[i];
 
-    subm[a][i11][row][from] = p_row_from;
-    subm[a][i11][row][to] = row_mid;
-    subm[a][i11][col][from] = p_col_from;
-    subm[a][i11][col][to] = col_mid;
+        subm[i][i12][sbm_row][sbm_from] = p_subm[i][sbm_row][sbm_from];
+        subm[i][i12][sbm_row][sbm_to] = row_mid[i];
+        subm[i][i12][sbm_col][sbm_from] = col_mid[i];
+        subm[i][i12][sbm_col][sbm_to] = p_subm[i][sbm_row][sbm_to];
 
+        subm[i][i21][sbm_row][sbm_from] = row_mid[i];
+        subm[i][i21][sbm_row][sbm_to] = p_subm[i][sbm_row][sbm_to];
+        subm[i][i21][sbm_col][sbm_from] = p_subm[i][sbm_row][sbm_from];
+        subm[i][i21][sbm_col][sbm_to] = col_mid[i];
 
+        subm[i][i22][sbm_row][sbm_from] = row_mid[i];
+        subm[i][i22][sbm_row][sbm_to] = p_subm[i][sbm_row][sbm_to];
+        subm[i][i22][sbm_col][sbm_from] = col_mid[i];
+        subm[i][i22][sbm_col][sbm_to] = p_subm[i][sbm_row][sbm_to];
+    }
 
-}*/
+    //cout << p_a.submatrix(subm[a][i22]) << endl;
+    Matrix s1 = p_b.subtract(subm[b][i12], p_b, subm[b][i22]);
+    Matrix s2 = p_a.add(subm[a][i11], p_a, subm[a][i12]);
+    Matrix s3 = p_a.add(subm[a][i21], p_a, subm[a][i22]);
+    Matrix s4 = p_b.subtract(subm[b][i21], p_b, subm[b][i11]);
+    Matrix s5 = p_a.add(subm[a][i11], p_a, subm[a][i22]);
+    Matrix s6 = p_b.add(subm[b][i11], p_b, subm[b][i22]);
+    Matrix s7 = p_a.subtract(subm[a][i12], p_a, subm[a][i22]);
+    Matrix s8 = p_b.add(subm[b][i21], p_b, subm[b][i22]);
+    Matrix s9 = p_a.subtract(subm[a][i11], p_a, subm[a][i21]);
+    Matrix s10 = p_b.add(subm[b][i11], p_b, subm[b][i12]);
+
+    Submatrix whole;
+    whole[sbm_row][sbm_from] = 0;
+    whole[sbm_row][sbm_to] = s1.rows();
+    whole[sbm_col][sbm_from] = 0;
+    whole[sbm_col][sbm_to] = s1.cols();
+
+    Matrix p1 = p_a.multiply(sbm[a][i11], s1, whole);
+    Matrix p2 = s2.multiply(whole, p_b, sbm[b][i22]);
+    Matrix p3 = s3.multiply(whole, p_b, sbm[b][i11]);
+    Matrix p4 = p_a.multiply(sbm[a][i22], s4, whole);
+    Matrix p5 = s5.multiply(whole, s6, whole);
+    Matrix p6 = s7.multiply(whole, s8, whole);
+    Matrix p7 = s9.multiply(whole, s10, whole);
+
+    p_res.add(subm[c][i11], p5 + p4 - p2 + p6, whole);
+    p_res.add(subm[c][i12], p1 + p2, whole);
+    p_res.add(subm[c][i21], p3 + p4, whole);
+    p_res.add(subm[c][i22], p5 + p1 - p3 - p7, whole);
+}
 
 
 Matrix & Matrix::schtrassen_multiply(const Matrix & p_a)
@@ -384,5 +439,16 @@ Matrix & Matrix::schtrassen_multiply(const Matrix & p_a)
         Matrix e(err);
         return e;
     }
-
+    Matrix res(constr_modes::mode_copy, n, n);
+    array<Submatrix, 3> sbm;
+    for (int i = 0; i < 3; i ++)
+    {
+        sbm[i][sbm_row][sbm_from] = 0;
+        sbm[i][sbm_row][sbm_to] = n;
+        sbm[i][sbm_col][sbm_from] = 0;
+        sbm[i][sbm_col][sbm_to] = n;
+    }
+    schtrassen_mult_rec(*this, p_a, res, sbm);
+    this->copy_items(res);
+    return * this;
 }

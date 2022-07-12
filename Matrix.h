@@ -50,9 +50,12 @@ class Matrix
         void set_item(const int p_row, const int p_col, const int p_val);
         int get_item(const int p_row, const int p_col) const;
         Matrix & operator+=(const Matrix & p_a);
+        Matrix & add(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);
         Matrix & operator-=(const Matrix & p_a);
+        Matrix & subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);
         Matrix & operator*=(const int p_a);
         Matrix & operator*=(const Matrix & p_a);
+        Matrix & multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);
         bool operator==(const Matrix & p_a) const;
         Matrix operator~() const;
         Matrix & operator=(const Matrix & p_a);
