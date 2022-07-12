@@ -42,6 +42,8 @@ class Matrix
         Matrix & operator=(const Matrix & p_a);
         Matrix(const Matrix & p_a);
         //Row operator[](int p_idx);
+        double determinant() const;
+        Matrix minor(int p_row, int p_col) const;
 
     protected:
 

@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include <ios>
+#include <cmath>
 
 using namespace std;
 
@@ -65,6 +66,14 @@ ostream & operator<<(ostream & p_os, const Matrix & p_m)
 {
     int rows = p_m.rows();
     int cols = p_m.cols();
+    if (rows <= 0)
+    {
+        p_os << "empty matrix: no rows" << endl;
+    }
+    if (cols <= 0)
+    {
+        p_os << "empty matrix: no columns" << endl;
+    }
     for (int r = 0; r < rows; r ++)
     {
         for (int c = 0; c < cols; c ++)
@@ -254,3 +263,50 @@ Row Matrix::operator[](int p_idx)
     return Row(*this, p_idx);
 }
 */
+double Matrix::determinant() const
+{
+    int rows = this->rows();
+    if (rows != this->cols())
+    {
+        cerr << "cannot find a determinant for a nonsquare matrix" << endl;
+        return nan("");
+    }
+    if (rows == 1)
+    {
+        return this->get_item(0, 0);
+    }
+    double res = 0;
+    for (int i = 0; i < rows; i ++)
+    {
+        res += pow(-1, i) * get_item(0, i) * (this->minor(0, i).determinant());
+    }
+    return res;
+}
+
+Matrix Matrix::minor(int p_row, int p_col) const
+{
+    Matrix err(constr_modes::mode_copy, 0, 0, 0);
+    if (p_row > this->rows())
+    {
+        cerr << "cannot create a minor: no such row" << endl;
+        return err;
+    }
+    if (p_col > this->cols())
+    {
+        cerr << "cannot create a minor: no such column" << endl;
+        return err;
+    }
+    Matrix res(*this);
+    res.m_items.erase(res.m_items.begin() + p_row);
+    int rows = this->rows() - 1;
+    int cols = this->cols() - 1;
+    for (int r = 0; r < rows; r ++)
+    {
+        for (int c = p_col; c < cols; c ++)
+        {
+            res.m_items[r][c] = res.m_items[r][c + 1];
+        }
+        res.m_items[r].pop_back();
+    }
+    return res;
+}
