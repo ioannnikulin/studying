@@ -25,7 +25,7 @@ int main()
     sbm1[sbm_row][sbm_to] = 4;
     sbm1[sbm_col][sbm_from] = 4;
     sbm1[sbm_col][sbm_to] = 7;
-    Matrix x3(x1.add(sbm, x2, sbm1));
+    Matrix x3(x1.subtract(sbm, x2, sbm1));
     cout << x3 << endl;
     return 0;
 }

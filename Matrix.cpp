@@ -178,9 +178,8 @@ Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatr
 
 Matrix Matrix::subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
 {
-    Matrix e(err);
-    return e;
-}//TODO
+    return this->add(sbm_this, p_a * -1, sbm_a);
+}
 
 Matrix Matrix::multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
 {
