@@ -34,6 +34,10 @@ struct Submatrix
         std::array<std::array<int, 2>, 2> m_idxs;
         std::array<int, 2> & operator[](int p_idx)
         {
+            if (m_idxs[p_idx][0] < 0 or m_idxs[p_idx][1] < 0)
+            {
+                cerr << "Warning: negative submatrix parameter" << endl;
+            }
             return m_idxs[p_idx];
         }
         Submatrix():
