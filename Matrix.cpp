@@ -134,25 +134,25 @@ Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatr
 
     Matrix res(*this);
 
-    if (trt >= this->rows())
+    if (trt >= this->rows() or trf < 0 or trt < 0)
     {
         cerr << "Error: not enough rows in minuend matrix" << endl;
         return res;
     }
 
-    if (tct >= this->cols())
+    if (tct >= this->cols() or tcf < 0 or tct < 0)
     {
         cerr << "Error: not enough columns in minuend matrix" << endl;
         return res;
     }
 
-    if (art >= p_a.rows())
+    if (art >= p_a.rows() or arf < 0 or art < 0)
     {
         cerr << "Error: not enough rows in subtrahend matrix" << endl;
         return res;
     }
 
-    if (act >= p_a.cols())
+    if (act >= p_a.cols() or acf < 0 or act < 0)
     {
         cerr << "Error: not enough columns in subtrahend matrix" << endl;
         return res;

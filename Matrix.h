@@ -36,6 +36,11 @@ struct Submatrix
         {
             return m_idxs[p_idx];
         }
+        Submatrix():
+            m_idxs({std::array<int, 2> ({-1,-1}), std::array<int, 2> ({-1,-1})})
+        {
+
+        }
 };
 
 class Matrix
