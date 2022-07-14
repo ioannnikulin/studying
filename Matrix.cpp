@@ -201,7 +201,8 @@ Matrix & Matrix::operator+=(const Matrix & p_a)
     a_whole[sbm_col][sbm_from] = 0;
     a_whole[sbm_col][sbm_to] = p_a.cols();
 
-    this->add(t_whole, p_a, a_whole);
+    this->copy_items(this->add(t_whole, p_a, a_whole));
+    return * this;
 }
 
 Matrix & Matrix::operator*=(const Matrix & p_a)
