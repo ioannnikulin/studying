@@ -116,27 +116,93 @@ int Matrix::cols() const
     return m_items[0].size();
 }
 
-Matrix & add(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO: move += code here
-Matrix & subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO
-Matrix & multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a);//TODO
+Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
+{
+    int trf = sbm_this.m_idxs[sbm_row][sbm_from];
+    int trt = sbm_this.m_idxs[sbm_row][sbm_to];
+    int rows = trt - trf;
+
+    int tcf = sbm_this.m_idxs[sbm_col][sbm_from];
+    int tct = sbm_this.m_idxs[sbm_col][sbm_to];
+    int cols = tct - tcf;
+
+    int arf = sbm_a.m_idxs[sbm_row][sbm_from];
+    int art = sbm_a.m_idxs[sbm_row][sbm_to];
+
+    int acf = sbm_a.m_idxs[sbm_col][sbm_from];
+    int act = sbm_a.m_idxs[sbm_col][sbm_to];
+
+    Matrix res(*this);
+
+    if (trt >= this->rows())
+    {
+        cerr << "Error: not enough rows in minuend matrix" << endl;
+        return res;
+    }
+
+    if (tct >= this->cols())
+    {
+        cerr << "Error: not enough columns in minuend matrix" << endl;
+        return res;
+    }
+
+    if (art >= p_a.rows())
+    {
+        cerr << "Error: not enough rows in subtrahend matrix" << endl;
+        return res;
+    }
+
+    if (act >= p_a.cols())
+    {
+        cerr << "Error: not enough columns in subtrahend matrix" << endl;
+        return res;
+    }
+
+
+    if (rows != art - arf
+        or cols != act - acf)
+    {
+        cerr << "Error: cannot add matrices of different sizes" << endl;
+        return res;
+    }
+
+    for (int r = trf; r < trt; r ++)
+    {
+        for (int c = tcf; c < tct; c ++)
+        {
+            res.set_item(r, c, this->get_item(r, c) + p_a.get_item(r - trf + arf, c - tcf + acf));
+        }
+    }
+    return res;
+}
+
+Matrix Matrix::subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
+{
+    Matrix e(err);
+    return e;
+}//TODO
+
+Matrix Matrix::multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
+{
+    Matrix e(err);
+    return e;
+}//TODO
 
 Matrix & Matrix::operator+=(const Matrix & p_a)
 {
-    int rows = this->rows();
-    int cols = this->cols();
-    if (rows != p_a.rows() or cols != p_a.cols())
-    {
-        cerr << "Error: cannot add matrices of different sizes" << endl;
-        return *this;
-    }
-    for (int r = 0; r < rows; r ++)
-    {
-        for (int c = 0; c < cols; c ++)
-        {
-            this->set_item(r, c, this->get_item(r, c) + p_a.get_item(r, c));
-        }
-    }
-    return * this;
+    Submatrix t_whole;
+    t_whole[sbm_row][sbm_from] = 0;
+    t_whole[sbm_row][sbm_to] = this->rows();
+    t_whole[sbm_col][sbm_from] = 0;
+    t_whole[sbm_col][sbm_to] = this->cols();
+
+    Submatrix a_whole;
+    a_whole[sbm_row][sbm_from] = 0;
+    a_whole[sbm_row][sbm_to] = p_a.rows();
+    a_whole[sbm_col][sbm_from] = 0;
+    a_whole[sbm_col][sbm_to] = p_a.cols();
+
+    this->add(t_whole, p_a, a_whole);
 }
 
 Matrix & Matrix::operator*=(const Matrix & p_a)
@@ -415,10 +481,10 @@ void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res,
     whole[sbm_col][sbm_from] = 0;
     whole[sbm_col][sbm_to] = s1.cols();
 
-    Matrix p1 = p_a.multiply(sbm[a][i11], s1, whole);
-    Matrix p2 = s2.multiply(whole, p_b, sbm[b][i22]);
-    Matrix p3 = s3.multiply(whole, p_b, sbm[b][i11]);
-    Matrix p4 = p_a.multiply(sbm[a][i22], s4, whole);
+    Matrix p1 = p_a.multiply(subm[a][i11], s1, whole);
+    Matrix p2 = s2.multiply(whole, p_b, subm[b][i22]);
+    Matrix p3 = s3.multiply(whole, p_b, subm[b][i11]);
+    Matrix p4 = p_a.multiply(subm[a][i22], s4, whole);
     Matrix p5 = s5.multiply(whole, s6, whole);
     Matrix p6 = s7.multiply(whole, s8, whole);
     Matrix p7 = s9.multiply(whole, s10, whole);
