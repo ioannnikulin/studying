@@ -47,6 +47,18 @@ Matrix::Matrix(const int p_rows, const int p_cols, initializer_list<int> p_vals)
     }
 }
 
+Matrix::Matrix(const int p_rows, const int p_cols, initializer_list<initializer_list<int>> p_vals)
+{
+    m_items = vector<vector<int>>(p_rows, vector<int>(p_rows, 0));
+    for (int r = 0; r < p_rows and r < p_vals.size(); r ++)
+    {
+        for (int c = 0; c < p_cols and c < (*(p_vals.begin()+r)).size(); c ++)
+        {
+            m_items[r][c] = *((*(p_vals.begin() + r)).begin() + c);
+        }
+    }
+}
+
 Matrix::~Matrix()
 {
 

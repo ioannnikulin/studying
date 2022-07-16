@@ -20,10 +20,6 @@ int mult_conseq(int sz)
 TEST_CASE("testing identity matrix", "[identity matrix]")
 {
     Matrix x1(Matrix::constr_modes::mode_identity, 4);
-    Matrix x2(4, 4, {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
-    for (int i = 0; i < 4; i ++)
-    {
-        x2.set_item(i, i, 1);
-    }
+    Matrix x2(4, 4, {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}});
     REQUIRE(x1 == x2);
 }

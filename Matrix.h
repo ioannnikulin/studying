@@ -59,6 +59,7 @@ class Matrix
         enum constr_modes {mode_copy, mode_identity, mode_conseq};
         Matrix(const constr_modes constr_mode, const int p_rows, const int p_cols = 1, const int p_val = 0);
         Matrix(const int p_rows, const int p_cols, std::initializer_list<int> p_vals);
+        Matrix(const int p_rows, const int p_cols, std::initializer_list<std::initializer_list<int>> p_vals);
         ~Matrix();
         int rows() const;
         int cols() const;
