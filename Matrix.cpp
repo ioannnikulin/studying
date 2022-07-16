@@ -181,12 +181,6 @@ Matrix Matrix::subtract(const Submatrix & sbm_this, const Matrix & p_a, const Su
     return this->add(sbm_this, p_a * -1, sbm_a);
 }
 
-Matrix Matrix::multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
-{
-    Matrix e(err);
-    return e;
-}//TODO
-
 Matrix & Matrix::operator+=(const Matrix & p_a)
 {
     Submatrix t_whole;
@@ -217,7 +211,8 @@ Matrix & Matrix::operator*=(const Matrix & p_a)
     }
     if (rows == connect and connect == cols)
     {
-        return schtrassen_multiply(p_a);
+        Matrix res(schtrassen_multiply(p_a));
+        return res;
     }
     Matrix res(constr_modes::mode_copy, rows, cols);
     for (int r = 0; r < rows; r ++)
@@ -481,22 +476,24 @@ void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res,
     whole[sbm_col][sbm_from] = 0;
     whole[sbm_col][sbm_to] = s1.cols();
 
-    Matrix p1 = p_a.multiply(subm[a][i11], s1, whole);
-    Matrix p2 = s2.multiply(whole, p_b, subm[b][i22]);
-    Matrix p3 = s3.multiply(whole, p_b, subm[b][i11]);
-    Matrix p4 = p_a.multiply(subm[a][i22], s4, whole);
-    Matrix p5 = s5.multiply(whole, s6, whole);
-    Matrix p6 = s7.multiply(whole, s8, whole);
-    Matrix p7 = s9.multiply(whole, s10, whole);
+    vector<Matrix> p(8, Matrix(Matrix::constr_modes::mode_copy, s1.rows(), s1.cols(), 0));//8 thoughh we need 7 - to match book numbering for clarity
 
-    p_res.add(subm[c][i11], p5 + p4 - p2 + p6, whole);
-    p_res.add(subm[c][i12], p1 + p2, whole);
-    p_res.add(subm[c][i21], p3 + p4, whole);
-    p_res.add(subm[c][i22], p5 + p1 - p3 - p7, whole);
+    schtrassen_mult_rec(p_a, s1, p[1], {subm[a][i11], whole, whole});
+    schtrassen_mult_rec(s2, p_b, p[2], {whole, subm[b][i22], whole});
+    schtrassen_mult_rec(s3, p_b, p[3], {whole, subm[b][i11], whole});
+    schtrassen_mult_rec(p_a, s4, p[4], {subm[a][i22], whole, whole});
+    schtrassen_mult_rec(s5, s6, p[5], {whole, whole, whole});
+    schtrassen_mult_rec(s7, s8, p[6], {whole, whole, whole});
+    schtrassen_mult_rec(s9, s10, p[7], {whole, whole, whole});
+
+    p_res.add(subm[c][i11], p[5] + p[4] - p[2] + p[6], whole);
+    p_res.add(subm[c][i12], p[1] + p[2], whole);
+    p_res.add(subm[c][i21], p[3] + p[4], whole);
+    p_res.add(subm[c][i22], p[5] + p[1] - p[3] - p[7], whole);
 }
 
 
-Matrix & Matrix::schtrassen_multiply(const Matrix & p_a)
+Matrix Matrix::schtrassen_multiply(const Matrix & p_a) const
 {
     int n = this->rows();
     if (n != this->cols() or n != p_a.rows() or n != p_a.cols())
@@ -515,6 +512,5 @@ Matrix & Matrix::schtrassen_multiply(const Matrix & p_a)
         sbm[i][sbm_col][sbm_to] = n;
     }
     schtrassen_mult_rec(*this, p_a, res, sbm);
-    this->copy_items(res);
-    return * this;
+    return res;
 }

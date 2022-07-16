@@ -32,12 +32,16 @@ struct Submatrix
 {
     public:
         std::array<std::array<int, 2>, 2> m_idxs;
-        std::array<int, 2> & operator[](int p_idx)
+        const std::array<int, 2> & operator[](int p_idx) const
         {
             if (m_idxs[p_idx][0] < 0 or m_idxs[p_idx][1] < 0)
             {
-                cerr << "Warning: negative submatrix parameter" << endl;
+                std::cerr << "Warning: negative submatrix parameter" << std::endl;
             }
+            return m_idxs[p_idx];
+        }
+        std::array<int, 2> & operator[](int p_idx)
+        {
             return m_idxs[p_idx];
         }
         Submatrix():
@@ -64,7 +68,6 @@ class Matrix
         Matrix subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const;
         Matrix & operator*=(const int p_a);
         Matrix & operator*=(const Matrix & p_a);
-        Matrix multiply(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const;
         bool operator==(const Matrix & p_a) const;
         Matrix operator~() const;
         Matrix & operator=(const Matrix & p_a);
@@ -77,7 +80,7 @@ class Matrix
     protected:
 
     private:
-        Matrix & schtrassen_multiply(const Matrix & p_a);
+        Matrix schtrassen_multiply(const Matrix & p_a) const;
         int copy_items(const Matrix & p_a);
         std::vector<std::vector<int>> m_items;
         Matrix();
