@@ -442,14 +442,58 @@ bool Matrix::operator==(const Matrix & p_a) const
 
 Matrix Matrix::submatrix(Submatrix p_subm) const
 {
-    Matrix res(constr_modes::mode_copy, p_subm[sbm_row][sbm_to] - p_subm[sbm_row][sbm_from], p_subm[sbm_col][sbm_to] - p_subm[sbm_col][sbm_from]);
-    for (int r = p_subm[sbm_row][sbm_from]; r < p_subm[sbm_row][sbm_to]; r ++)
-    {
-        for (int c = p_subm[sbm_col][sbm_from]; c < p_subm[sbm_col][sbm_to]; c ++)
-        {
-            res.set_item(r - p_subm[sbm_row][sbm_from], c - p_subm[sbm_col][sbm_from], this->get_item(r, c));
-        }
-    }
+    Matrix res(*this);
+    res.resize(p_subm[sbm_row][sbm_from], this->rows() - p_subm[sbm_row][sbm_to], p_subm[sbm_col][sbm_from], this->cols() - p_subm[sbm_col][sbm_to]);
     return res;
 }
 
+void Matrix::resize(int p_top_rows, int p_bottom_rows, int p_left_cols, int p_right_cols)
+{
+    if (p_bottom_rows < 0)
+    {
+        m_items.erase(m_items.end() + p_bottom_rows, m_items.end());
+    }
+    else
+    {
+        m_items.insert(m_items.cend(), p_bottom_rows, vector<int> (this->cols(), 0));
+    }
+
+    if (p_top_rows < 0)
+    {
+        m_items.erase(m_items.begin(), m_items.begin() - p_top_rows);
+    }
+    else
+    {
+        m_items.insert(m_items.cbegin(), p_top_rows, vector<int> (this->cols(), 0));
+    }
+
+    if (p_left_cols < 0)
+    {
+        for (auto & r: m_items)
+        {
+            r.erase(r.begin(), r.begin() - p_left_cols);
+        }
+    }
+    else
+    {
+        for (auto & r: m_items)
+        {
+            r.insert(r.cbegin(), p_left_cols, 0);
+        }
+    }
+
+    if (p_right_cols < 0)
+    {
+        for (auto & r: m_items)
+        {
+            r.erase(r.end() + p_right_cols, r.end());
+        }
+    }
+    else
+    {
+        for (auto & r: m_items)
+        {
+            r.insert(r.cend(), p_right_cols, 0);
+        }
+    }
+}

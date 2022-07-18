@@ -80,6 +80,7 @@ class Matrix
         double determinant() const;
         Matrix minor(int p_row, int p_col) const;
         Matrix submatrix(Submatrix p_subm) const;
+        void resize(int p_top_rows, int p_bottom_rows, int p_left_cols, int p_right_cols);
 
     protected:
 

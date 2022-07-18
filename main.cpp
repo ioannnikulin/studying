@@ -55,6 +55,7 @@ TEST_CASE("testing schtrassen multiplication", "[schtrassen multiply]")
 
 int main()
 {
+    /*
     Matrix x1(Matrix::constr_modes::mode_conseq, 3, 3);
     Matrix x2(x1);
     x2 *= 2;
@@ -62,5 +63,12 @@ int main()
     Matrix x3 = x1 * x2;
     Matrix xres(3, 3, {{30, 36, 42}, {84, 108, 132}, {138, 180, 222}});
     cout << x3 << endl << xres << endl;
+    */
+    Matrix x1(Matrix::constr_modes::mode_conseq, 5, 5);
+    cout << x1 << endl;
+    x1.resize(1, 2, 3, 4);
+    cout << x1 << endl;
+    x1.resize(-4, -3, -2, -1);
+    cout << x1 << endl;
 }
 #endif // CATCH_CONFIG_MAIN
