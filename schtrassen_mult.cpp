@@ -8,11 +8,12 @@ using namespace std;
 
 void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res, array<Submatrix, 3> p_subm)
 {
-    if (p_subm[0][sbm_row][sbm_to] - p_subm[0][sbm_row][sbm_from] < 1)
+    int sz = p_subm[0][sbm_row][sbm_to] - p_subm[0][sbm_row][sbm_from];
+    if (sz < 1)
     {
         cerr << "Error: request to multiply empty matrices" << endl;
     }
-    if (p_subm[0][sbm_row][sbm_to] - p_subm[0][sbm_row][sbm_from] == 1)
+    if (sz == 1)
     {
         p_res.set_item(p_subm[2][sbm_row][sbm_from],
                        p_subm[2][sbm_col][sbm_from],
@@ -54,41 +55,42 @@ void schtrassen_mult_rec(const Matrix & p_a, const Matrix & p_b, Matrix & p_res,
         subm[i][i22][sbm_col][sbm_to] = p_subm[i][sbm_row][sbm_to];
     }
 
-    //cout << p_a.submatrix(subm[a][i22]) << endl;
-    Matrix s1 = p_b.subtract(subm[b][i12], p_b, subm[b][i22]).submatrix(subm[b][i12]);
-    //cout << s1 << endl;
-    Matrix s2 = p_a.add(subm[a][i11], p_a, subm[a][i12]).submatrix(subm[a][i11]);
-    Matrix s3 = p_a.add(subm[a][i21], p_a, subm[a][i22]).submatrix(subm[a][i21]);
-    Matrix s4 = p_b.subtract(subm[b][i21], p_b, subm[b][i11]).submatrix(subm[b][i21]);
-    Matrix s5 = p_a.add(subm[a][i11], p_a, subm[a][i22]).submatrix(subm[a][i11]);
-    Matrix s6 = p_b.add(subm[b][i11], p_b, subm[b][i22]).submatrix(subm[b][i11]);
-    Matrix s7 = p_a.subtract(subm[a][i12], p_a, subm[a][i22]).submatrix(subm[a][i12]);
-    Matrix s8 = p_b.add(subm[b][i21], p_b, subm[b][i22]).submatrix(subm[b][i21]);
-    Matrix s9 = p_a.subtract(subm[a][i11], p_a, subm[a][i21]).submatrix(subm[a][i11]);
-    Matrix s10 = p_b.add(subm[b][i11], p_b, subm[b][i12]).submatrix(subm[b][i11]);
+    vector<Matrix> s(11, Matrix(Matrix::constr_modes::mode_copy, ceil(sz / 2.0), ceil(sz / 2.0), 0));//11 though we need 10 - to match book numbering for clarity
+    //possible error above in sz / 2
+
+    cout << p_b.submatrix(subm[b][i12]) << endl << p_b.submatrix(subm[b][i22]) << endl;//TODO what should we do if the matrix size is not power of 2?
+
+    s[1] = p_b.subtract(subm[b][i12], p_b, subm[b][i22]).submatrix(subm[b][i12]);
+    s[2] = p_a.add(subm[a][i11], p_a, subm[a][i12]).submatrix(subm[a][i11]);
+    s[3] = p_a.add(subm[a][i21], p_a, subm[a][i22]).submatrix(subm[a][i21]);
+    s[4] = p_b.subtract(subm[b][i21], p_b, subm[b][i11]).submatrix(subm[b][i21]);
+    s[5] = p_a.add(subm[a][i11], p_a, subm[a][i22]).submatrix(subm[a][i11]);
+    s[6] = p_b.add(subm[b][i11], p_b, subm[b][i22]).submatrix(subm[b][i11]);
+    s[7] = p_a.subtract(subm[a][i12], p_a, subm[a][i22]).submatrix(subm[a][i12]);
+    s[8] = p_b.add(subm[b][i21], p_b, subm[b][i22]).submatrix(subm[b][i21]);
+    s[9] = p_a.subtract(subm[a][i11], p_a, subm[a][i21]).submatrix(subm[a][i11]);
+    s[10] = p_b.add(subm[b][i11], p_b, subm[b][i12]).submatrix(subm[b][i11]);
 
     Submatrix whole;
     whole[sbm_row][sbm_from] = 0;
-    whole[sbm_row][sbm_to] = s1.rows();
+    whole[sbm_row][sbm_to] = ceil(sz / 2.0);
     whole[sbm_col][sbm_from] = 0;
-    whole[sbm_col][sbm_to] = s1.cols();
+    whole[sbm_col][sbm_to] = ceil(sz / 2.0);
 
-    vector<Matrix> p(8, Matrix(Matrix::constr_modes::mode_copy, s1.rows(), s1.cols(), 0));//8 thoughh we need 7 - to match book numbering for clarity
+    vector<Matrix> p(8, Matrix(Matrix::constr_modes::mode_copy, ceil(sz / 2.0), ceil(sz / 2.0), 0));//8 though we need 7 - to match book numbering for clarity
 
-    schtrassen_mult_rec(p_a, s1, p[1], {subm[a][i11], whole, whole});
-    //cout << p[1] << endl;
-    //getch();
-    schtrassen_mult_rec(s2, p_b, p[2], {whole, subm[b][i22], whole});
-    schtrassen_mult_rec(s3, p_b, p[3], {whole, subm[b][i11], whole});
-    schtrassen_mult_rec(p_a, s4, p[4], {subm[a][i22], whole, whole});
-    schtrassen_mult_rec(s5, s6, p[5], {whole, whole, whole});
-    schtrassen_mult_rec(s7, s8, p[6], {whole, whole, whole});
-    schtrassen_mult_rec(s9, s10, p[7], {whole, whole, whole});
+    schtrassen_mult_rec(p_a, s[1], p[1], {subm[a][i11], whole, whole});
+    schtrassen_mult_rec(s[2], p_b, p[2], {whole, subm[b][i22], whole});
+    schtrassen_mult_rec(s[3], p_b, p[3], {whole, subm[b][i11], whole});
+    schtrassen_mult_rec(p_a, s[4], p[4], {subm[a][i22], whole, whole});
+    schtrassen_mult_rec(s[5], s[6], p[5], {whole, whole, whole});
+    schtrassen_mult_rec(s[7], s[8], p[6], {whole, whole, whole});
+    schtrassen_mult_rec(s[9], s[10], p[7], {whole, whole, whole});
 
-    p_res.add(subm[c][i11], p[5] + p[4] - p[2] + p[6], whole);
-    p_res.add(subm[c][i12], p[1] + p[2], whole);
-    p_res.add(subm[c][i21], p[3] + p[4], whole);
-    p_res.add(subm[c][i22], p[5] + p[1] - p[3] - p[7], whole);
+    p_res.add_here(subm[c][i11], p[5] + p[4] - p[2] + p[6], whole);
+    p_res.add_here(subm[c][i12], p[1] + p[2], whole);
+    p_res.add_here(subm[c][i21], p[3] + p[4], whole);
+    p_res.add_here(subm[c][i22], p[5] + p[1] - p[3] - p[7], whole);
 }
 
 

@@ -152,6 +152,13 @@ int Matrix::cols() const
 
 Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
 {
+    Matrix res(*this);
+    res.add_here(sbm_this, p_a, sbm_a);
+    return res;
+}
+
+void Matrix::add_here(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a)
+{
     int trf = sbm_this.m_idxs[sbm_row][sbm_from];
     int trt = sbm_this.m_idxs[sbm_row][sbm_to];
     int rows = trt - trf;
@@ -166,30 +173,28 @@ Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatr
     int acf = sbm_a.m_idxs[sbm_col][sbm_from];
     int act = sbm_a.m_idxs[sbm_col][sbm_to];
 
-    Matrix res(*this);
-
     if (trt > this->rows() or trf < 0 or trt < 0)
     {
         cerr << "Error: not enough rows in first matrix" << endl;
-        return res;
+        return;
     }
 
     if (tct > this->cols() or tcf < 0 or tct < 0)
     {
         cerr << "Error: not enough columns in first matrix" << endl;
-        return res;
+        return;
     }
 
     if (art > p_a.rows() or arf < 0 or art < 0)
     {
         cerr << "Error: not enough rows in second matrix" << endl;
-        return res;
+        return;
     }
 
     if (act > p_a.cols() or acf < 0 or act < 0)
     {
         cerr << "Error: not enough columns in second matrix" << endl;
-        return res;
+        return;
     }
 
 
@@ -197,17 +202,16 @@ Matrix Matrix::add(const Submatrix & sbm_this, const Matrix & p_a, const Submatr
         or cols != act - acf)
     {
         cerr << "Error: cannot add/subtract matrices of different sizes" << endl;
-        return res;
+        return;
     }
 
     for (int r = trf; r < trt; r ++)
     {
         for (int c = tcf; c < tct; c ++)
         {
-            res.set_item(r, c, this->get_item(r, c) + p_a.get_item(r - trf + arf, c - tcf + acf));
+            this->set_item(r, c, this->get_item(r, c) + p_a.get_item(r - trf + arf, c - tcf + acf));
         }
     }
-    return res;
 }
 
 Matrix Matrix::subtract(const Submatrix & sbm_this, const Matrix & p_a, const Submatrix & sbm_a) const
@@ -229,7 +233,7 @@ Matrix & Matrix::operator+=(const Matrix & p_a)
     a_whole[sbm_col][sbm_from] = 0;
     a_whole[sbm_col][sbm_to] = p_a.cols();
 
-    this->copy_items(this->add(t_whole, p_a, a_whole));
+    this->add_here(t_whole, p_a, a_whole);
     return * this;
 }
 
@@ -246,7 +250,8 @@ Matrix & Matrix::operator*=(const Matrix & p_a)
     if (rows == connect and connect == cols)
     {
         Matrix res(schtrassen_multiply(p_a));
-        return res;
+        this->copy_items(res);
+        return * this;
     }
     Matrix res(constr_modes::mode_copy, rows, cols);
     for (int r = 0; r < rows; r ++)
